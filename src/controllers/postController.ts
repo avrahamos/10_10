@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import Post, { IPost } from "../models/postModel";
 import User from "../models/userModel";
-import { createPostFromService } from "../services/postService";
+import { createPostFromService, getAllPosts } from "../services/postService";
 
 // Create a new post
 export const createPost = async (
@@ -24,10 +24,14 @@ export const deletePost = async (
 ): Promise<void> => {};
 
 // Get all posts
-export const getPosts = async (
-  req: Request,
-  res: Response
-): Promise<void> => {};
+export const getPosts = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const posts = await getAllPosts();
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+};
 
 // Get a single post by ID
 export const getPost = async (req: Request, res: Response): Promise<void> => {};

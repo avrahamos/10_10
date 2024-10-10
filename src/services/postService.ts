@@ -12,11 +12,15 @@ const createPostFromService = async (
       author,
       comments,
     });
-    await userModel.findByIdAndUpdate(
+    const userToPost = await userModel.findByIdAndUpdate(
       author,
       { $push: { posts: postDb._id } },
       { new: true }
     );
+    if (!updatePostById) {
+      throw new Error("user not found");
+    }
+
     postDb.save();
     return postDb;
   } catch (err) {
@@ -25,9 +29,17 @@ const createPostFromService = async (
   }
 };
 
-const getAllPosts = async () => {
+const getAllPosts = async (): Promise<mongoose.Document[] | null> => {
   try {
-  } catch (err) {}
+    const posts: mongoose.Document[] = await postModel.find();
+    if (!posts) {
+      return null;
+    }
+    return posts;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
 };
 
 const getPostById = async (postId: string) => {
