@@ -42,9 +42,20 @@ const getAllPosts = async (): Promise<mongoose.Document[] | null> => {
   }
 };
 
-const getPostById = async (postId: string) => {
+const getPostById = async (
+  postId: string
+): Promise<mongoose.Document | null> => {
   try {
-  } catch (err) {}
+    const post = await postModel.findById(postId);
+    if (!post) {
+      console.log("post not found");
+      return null;
+    }
+    return post;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
 };
 
 const updatePostById = async (

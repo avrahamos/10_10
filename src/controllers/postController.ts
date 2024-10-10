@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import Post, { IPost } from "../models/postModel";
 import User from "../models/userModel";
-import { createPostFromService, getAllPosts } from "../services/postService";
+import {
+  createPostFromService,
+  getAllPosts,
+  getPostById,
+} from "../services/postService";
 
 // Create a new post
 export const createPost = async (
@@ -34,7 +38,14 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
 };
 
 // Get a single post by ID
-export const getPost = async (req: Request, res: Response): Promise<void> => {};
+export const getPost = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const post = await getPostById(req.params.id);
+    res.status(200).json(post);
+  } catch (err) {
+    res.status(200).json(err);
+  }
+};
 
 // Update a post
 export const updatePost = async (
