@@ -2,7 +2,6 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 import validator from "validator";
 
 export interface IUser extends Document {
-  _id: Types.ObjectId;
   username: string;
   email: string;
   profile: {
@@ -14,7 +13,7 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>(
   {
-    username: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     profile: {
       bio: { type: String, default: "" },
