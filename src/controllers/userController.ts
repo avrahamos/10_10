@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import User, { IUser } from "../models/userModel";
-import { createUserService, getAllUsers } from "../services/userService";
+import {
+  createUserService,
+  getAllUsers,
+  getUserByName,
+} from "../services/userService";
 
 export const createUser = async (
   req: Request,
@@ -25,6 +29,14 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const getUser = async (req: Request, res: Response) => {};
+export const getUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userName = req.params.username;
+    const user = await getUserByName(userName);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+};
 
 // Optionally, add DELETE and EDIT functions

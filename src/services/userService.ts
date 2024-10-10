@@ -22,7 +22,7 @@ export const createUserService = async (
 
 export const getAllUsers = async (): Promise<mongoose.Document[] | null> => {
   try {
-    const users = await userModel.find();
+    const users: mongoose.Document[] = await userModel.find();
     console.log(users);
     if (!users) {
       return null;
@@ -34,9 +34,19 @@ export const getAllUsers = async (): Promise<mongoose.Document[] | null> => {
   }
 };
 
-const getUserById = async (userId: string): Promise<void> => {
+export const getUserByName = async (
+  userName: string
+): Promise<mongoose.Document | null> => {
   try {
+    const user = await userModel.findOne({ username: userName });
+
+    if (!user) {
+      return null;
+    }
+
+    return user;
   } catch (err) {
     console.log(err);
+    return null;
   }
 };
