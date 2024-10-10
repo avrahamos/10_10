@@ -38,14 +38,8 @@ export const deletePost = async (
 ): Promise<void> => {
   try {
     const postId = req.params.id;
-    const { userIdToDeletePost } = req.body;
 
-    if (!userIdToDeletePost) {
-      res.status(400).json({ message: "User ID is required" });
-      return;
-    }
-
-    const deletedPost = await deletePostById(postId, userIdToDeletePost);
+    const deletedPost = await deletePostById(postId);
 
     if (!deletedPost) {
       res.status(404).json({ message: "Post not found" });

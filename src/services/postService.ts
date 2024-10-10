@@ -113,18 +113,26 @@ const addCommentById = async (postId: string, newComment: IComment) => {
 };
 
 const deletePostById = async (
-  postId: string,
-  author: string
+  postId: string
 ): Promise<mongoose.Document | null> => {
   try {
-    const deletedPost = await postModel.findByIdAndDelete(postId);
+    const postToDelete = await postModel.findById(postId).populate("author");
 
-    if (!deletedPost) {
+    if (!postToDelete) {
       console.error("Post not found");
       return null;
     }
 
-    const userToUpdate = await userModel.findByIdAndUpdate(author, {
+    const authorId = postToDelete.author._id;
+
+    const deletedPost = await postModel.findByIdAndDelete(postId);
+
+    if (!deletedPost) {
+      console.error("Post not found after deletion attempt");
+      return null;
+    }
+
+    const userToUpdate = await userModel.findByIdAndUpdate(authorId, {
       $pull: { posts: deletedPost._id },
     });
 
