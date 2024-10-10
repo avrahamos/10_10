@@ -92,12 +92,52 @@ const updatePostById = async (
 
 const addCommentById = async (postId: string, newComment: IComment) => {
   try {
-  } catch (err) {}
+    const post = await postModel.findById(postId);
+    if (!post) {
+      console.error("Post not found");
+      return null;
+    }
+
+    post.comments.push({
+      content: newComment.content,
+      author: newComment.author,
+      createdAt: new Date(),
+    });
+
+    await post.save();
+    return post;
+  } catch (err) {
+    console.log("Error adding comment:", err);
+    return null;
+  }
 };
 
-const deletePostById = async (postId: string) => {
+const deletePostById = async (
+  postId: string,
+  author: string
+): Promise<mongoose.Document | null> => {
   try {
-  } catch (err) {}
+    const deletedPost = await postModel.findByIdAndDelete(postId);
+
+    if (!deletedPost) {
+      console.error("Post not found");
+      return null;
+    }
+
+    const userToUpdate = await userModel.findByIdAndUpdate(author, {
+      $pull: { posts: deletedPost._id },
+    });
+
+    if (!userToUpdate) {
+      console.error("User not found or update failed");
+      return null;
+    }
+
+    return deletedPost;
+  } catch (err) {
+    console.log("Error occurred:", err);
+    return null;
+  }
 };
 
 export {

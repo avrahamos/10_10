@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import Post, { IPost } from "../models/postModel";
-import User from "../models/userModel";
 import {
+  addCommentById,
   createPostFromService,
+  deletePostById,
   getAllPosts,
   getPostById,
   updatePostById,
@@ -26,7 +26,16 @@ export const createPost = async (
 export const deletePost = async (
   req: Request,
   res: Response
-): Promise<void> => {};
+): Promise<void> => {
+  try {
+    const postId = req.params.id;
+    const userIdToDeletePost = req.body;
+    const deletePost = await deletePostById(postId, userIdToDeletePost);
+    res.status(200).json(deletePost);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+};
 
 // Get all posts
 export const getPosts = async (req: Request, res: Response): Promise<void> => {
@@ -57,7 +66,7 @@ export const updatePost = async (
     const id: string = req.params.id;
     const title: string | undefined = req.body.title;
     const content: string | undefined = req.body.content;
-    const updatePostFile = await updatePostById(id, title, content);
+    const updatePostFile = await updatePostById(id, req.body);
     res.status(200).json(updatePostFile);
   } catch (err) {
     res.status(200).json(err);
@@ -68,4 +77,24 @@ export const updatePost = async (
 export const addComment = async (
   req: Request,
   res: Response
-): Promise<void> => {};
+): Promise<void> => {
+  try {
+    const postId = req.params.id;
+    const newComment = req.body;
+
+    if (!newComment.content || !newComment.author) {
+      res.status(400).json({ message: "Content and author are required" });
+    }
+
+    const comment = await addCommentById(postId, newComment);
+
+    if (!comment) {
+      res.status(404).json({ message: "Post not found" });
+    }
+
+    res.status(200).json(comment);
+  } catch (err) {
+    console.log("Error adding comment:", err);
+    res.status(500).json({ message: "Error adding comment", error: err });
+  }
+};
