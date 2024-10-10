@@ -1,6 +1,7 @@
 import postModel, { IPost, IComment } from "../models/postModel";
 import mongoose from "mongoose";
 import userModel from "../models/userModel";
+
 const createPostFromService = async (
   newPost: IPost
 ): Promise<mongoose.Document | null> => {
@@ -62,9 +63,31 @@ const updatePostById = async (
   postId: string,
   title?: string,
   content?: string
-) => {
+): Promise<mongoose.Document | null> => {
   try {
-  } catch (err) {}
+    if (!title && !content) {
+      console.log("no parameter to update");
+      return null;
+    }
+
+    const updateFields: { [key: string]: string | undefined } = {};
+    if (title) updateFields.title = title;
+    if (content) updateFields.content = content;
+
+    const updatedPost = await postModel.findByIdAndUpdate(
+      postId,
+      { $set: updateFields },
+      { new: true }
+    );
+    if (!updateFields) {
+      console.log("post not found");
+      return null;
+    }
+    return updatedPost;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
 };
 
 const addCommentById = async (postId: string, newComment: IComment) => {
@@ -83,4 +106,5 @@ export {
   getPostById,
   addCommentById,
   deletePostById,
+  updatePostById,
 };

@@ -5,6 +5,7 @@ import {
   createPostFromService,
   getAllPosts,
   getPostById,
+  updatePostById,
 } from "../services/postService";
 
 // Create a new post
@@ -51,7 +52,17 @@ export const getPost = async (req: Request, res: Response): Promise<void> => {
 export const updatePost = async (
   req: Request,
   res: Response
-): Promise<void> => {};
+): Promise<void> => {
+  try {
+    const id: string = req.params.id;
+    const title: string | undefined = req.body.title;
+    const content: string | undefined = req.body.content;
+    const updatePostFile = await updatePostById(id, title, content);
+    res.status(200).json(updatePostFile);
+  } catch (err) {
+    res.status(200).json(err);
+  }
+};
 
 // Add a comment to a post
 export const addComment = async (
