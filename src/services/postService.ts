@@ -1,8 +1,28 @@
-import { IPost, IComment } from "../models/postModel";
-
-const createPostFromService = async (newPost: IPost) => {
+import postModel, { IPost, IComment } from "../models/postModel";
+import mongoose from "mongoose";
+import userModel from "../models/userModel";
+const createPostFromService = async (
+  newPost: IPost
+): Promise<mongoose.Document | null> => {
   try {
-  } catch (err) {}
+    const { title, content, author, comments } = newPost;
+    const postDb = new postModel({
+      title,
+      content,
+      author,
+      comments,
+    });
+    await userModel.findByIdAndUpdate(
+      author,
+      { $push: { posts: postDb._id } },
+      { new: true }
+    );
+    postDb.save();
+    return postDb;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
 };
 
 const getAllPosts = async () => {
@@ -32,4 +52,12 @@ const addCommentById = async (postId: string, newComment: IComment) => {
 const deletePostById = async (postId: string) => {
   try {
   } catch (err) {}
+};
+
+export {
+  createPostFromService,
+  getAllPosts,
+  getPostById,
+  addCommentById,
+  deletePostById,
 };
