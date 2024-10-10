@@ -20,10 +20,17 @@ export const createUserService = async (
   }
 };
 
-const getAllUsers = async (): Promise<void> => {
+export const getAllUsers = async (): Promise<mongoose.Document[] | null> => {
   try {
+    const users = await userModel.find();
+    console.log(users);
+    if (!users) {
+      return null;
+    }
+    return users;
   } catch (err) {
     console.log(err);
+    return null;
   }
 };
 
